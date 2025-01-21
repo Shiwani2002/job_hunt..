@@ -16,9 +16,18 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
+// const corsOptions = {
+//     origin:'https://job-hunt-frontend.onrender.com',
+//     credentials:true
+// }
 const corsOptions = {
-    origin:'https://job-hunt-frontend.onrender.com',
-    credentials:true
+    origin: [
+        'https://job-hunt-frontend.onrender.com',  // Production
+        'http://localhost:5173'  // Development
+    ],
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
 }
 
 app.use(cors(corsOptions));
