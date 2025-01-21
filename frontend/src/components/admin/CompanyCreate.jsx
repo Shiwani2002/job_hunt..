@@ -14,24 +14,64 @@ const CompanyCreate = () => {
     const navigate = useNavigate();
     const [companyName, setCompanyName] = useState("");
     const dispatch = useDispatch();
+    // const registerNewCompany = async () => {
+    //     try {
+    //              // Get the token from cookies manually
+    //     const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+
+    //     if (!token) {
+    //         toast.error("Authentication failed. Please log in again.");
+    //         return;
+    //     }
+    //         const res = await axios.post(`${COMPANY_API_END_POINT}/register`, {companyName}, {
+    //             headers:{
+    //                 'Content-Type':'application/json'
+    //             },
+    //             withCredentials:true
+    //         });
+    //         if(res?.data?.success){
+    //             dispatch(setSingleCompany(res.data.company));
+    //             toast.success(res.data.message);
+    //             const companyId = res?.data?.company?._id;
+    //             navigate(`/admin/companies/${companyId}`);
+    //         }
+    //     } catch (error) {
+    //         console.log(error);
+    //     }
+    // }
     const registerNewCompany = async () => {
-        try {
-            const res = await axios.post(`${COMPANY_API_END_POINT}/register`, {companyName}, {
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                withCredentials:true
-            });
-            if(res?.data?.success){
-                dispatch(setSingleCompany(res.data.company));
-                toast.success(res.data.message);
-                const companyId = res?.data?.company?._id;
-                navigate(`/admin/companies/${companyId}`);
-            }
-        } catch (error) {
-            console.log(error);
+    try {
+        // Get the token from cookies manually
+        const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+
+        if (!token) {
+            toast.error("Authentication failed. Please log in again.");
+            return;
         }
+
+        const res = await axios.post(`${COMPANY_API_END_POINT}/register`, 
+            { companyName }, 
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,  // Send token in headers
+                    'Content-Type': 'application/json',
+                },
+                withCredentials: true  // Ensure cookies are included in the request
+            }
+        );
+
+        if (res?.data?.success) {
+            dispatch(setSingleCompany(res.data.company));
+            toast.success(res.data.message);
+            const companyId = res?.data?.company?._id;
+            navigate(`/admin/companies/${companyId}`);
+        }
+    } catch (error) {
+        console.error("Error registering company:", error.response?.data || error);
+        toast.error(error.response?.data?.message || "Something went wrong.");
     }
+};
+
     return (
         <div>
             <Navbar />
